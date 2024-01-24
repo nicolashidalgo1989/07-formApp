@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   templateUrl: './dynamic-page.component.html'
@@ -17,6 +17,8 @@ export class DynamicPageComponent {
       ['Death Stranding', Validators.required],
     ]),
   })
+
+  public newFavorite: FormControl = new FormControl('', [ Validators.required ]);
 
   constructor( private fb: FormBuilder ){}
 
@@ -53,6 +55,24 @@ export class DynamicPageComponent {
 
   }
 
+  onAddToFavorites(): void{
+
+    if( this.newFavorite.invalid ) return;
+
+    const newGame = this.newFavorite.value;
+
+    // Usando FormControl
+    // this.favoriteGames.push(new FormControl(newGame, Validators.required) );
+
+    // Usan FormBuilder
+    this.favoriteGames.push(
+      this.fb.control(newGame, Validators.required)
+    );
+
+    this.newFavorite.reset();
+
+  }
+
   onDeleteFavorite( index: number ): void{
     this.favoriteGames.removeAt(index);
   }
@@ -66,7 +86,11 @@ export class DynamicPageComponent {
 
     console.log(this.myForm.value);
 
+    (this.myForm.controls['favoriteGames'] as FormArray) = this.fb.array([]);
+
     this.myForm.reset();
+
+
   }
 
 }
