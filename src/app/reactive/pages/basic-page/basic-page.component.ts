@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ValidatorsService } from '../../../shared/services/validators.service';
 
 const rtx5090 = {
   name: 'RTX 5090',
@@ -26,35 +27,21 @@ export class BasicPageComponent implements OnInit {
     inStorage: [ 0, [ Validators.required, Validators.min(0) ]  ]
   });
 
-  constructor( private fb: FormBuilder){}
+  constructor(
+    private fb: FormBuilder,
+    private vs: ValidatorsService
+  ){}
 
   ngOnInit(): void {
     // this.myForm.reset(rtx5090)
   }
 
-  isValidField(field: string): boolean | null{
-
-    return this.myForm.controls[field].errors && this.myForm.controls[field].touched
-
+  isValidField(field: string) {
+    return this.vs.isValidField(this.myForm, field)
   }
 
-  getFieldError(field: string): string | null {
-
-    if( !this.myForm.controls[field] ) return null;
-
-    const errors = this.myForm.controls[field].errors || {};
-
-    for (const key of Object.keys(errors) ) {
-      switch( key ){
-        case 'required':
-          return 'Este campo es requerido';
-        case 'minlength':
-          return `Mínimo ${ errors['minlength'].requiredLength } carácteres.`;
-      }
-    }
-
-    return null;
-
+  getFieldError(field: string) {
+    return this.vs.getFieldError( this.myForm, field);
   }
 
   onSave():void{
